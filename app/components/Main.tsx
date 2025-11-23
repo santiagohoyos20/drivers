@@ -1,7 +1,7 @@
 import { Button, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useUser } from "../../hooks/useUser";
-import Map from "./Map";
+import MapView from "./MapView";
 
 export default function Main() {
   const { user, logout } = useUser();
@@ -11,7 +11,7 @@ export default function Main() {
     <View style={[styles.container, { flex: 1, paddingTop: insets.top, alignItems: "center" }]}>
       <Text style={styles.title}>Bienvenido</Text>
       {/* <Text>{user.email}</Text> */}
-        <Map />
+        <MapView />
       <Button title="Logout" onPress={logout} />
     </View>
   );
