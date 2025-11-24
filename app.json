@@ -10,7 +10,10 @@
     "newArchEnabled": true,
 
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "UIBackgroundModes": ["location"]
+      }
     },
 
     "android": {
@@ -21,7 +24,11 @@
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.sjhs.drivers",
-
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION"
+      ],
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyCzM0x-5dDFApvSjNrjXM6JStcylPGFIqU"
@@ -48,7 +55,15 @@
           }
         }
       ],
-      "expo-maps"
+      "expo-maps",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "La app necesita tu ubicación para rastrear el bus en tiempo real.",
+          "locationAlwaysPermission": "La app necesita tu ubicación incluso en segundo plano para rastrear el bus.",
+          "locationWhenInUsePermission": "La app necesita tu ubicación para mostrarte en el mapa."
+        }
+      ]
     ],
 
     "experiments": {
