@@ -1,8 +1,12 @@
 import polyline from "@mapbox/polyline";
 import * as Location from "expo-location";
+import * as TaskManager from "expo-task-manager";
 import { useEffect, useRef, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Alert, Button, StyleSheet, Text, View } from "react-native";
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
+
+// Nombre de la tarea en background
+const LOCATION_TASK_NAME = "background-location-task";
 
 // Tipo para coordenadas
 interface Coordinate {
@@ -10,9 +14,59 @@ interface Coordinate {
   longitude: number;
 }
 
+// Define la tarea de ubicación en background
+TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
+  if (error) {
+    console.error("Error en background location:", error);
+    return;
+  }
+  if (data) {
+    const { locations } = data as { locations: Location.LocationObject[] };
+    const location = locations[0];
+    
+    console.log("📍 Ubicación en background:", {
+      lat: location.coords.latitude,
+      lng: location.coords.longitude,
+      timestamp: new Date(location.timestamp).toLocaleTimeString()
+    });
+
+    // Aquí puedes enviar la ubicación a tu servidor
+    sendLocationToServer({
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+      timestamp: location.timestamp,
+    });
+  }
+});
+
+// Función para enviar ubicación al servidor
+async function sendLocationToServer(location: {
+  latitude: number;
+  longitude: number;
+  timestamp: number;
+}) {
+  try {
+    // Reemplaza con tu endpoint
+    const response = await fetch("https://tu-servidor.com/api/location", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(location),
+    });
+    
+    if (response.ok) {
+      console.log("✅ Ubicación enviada al servidor");
+    }
+  } catch (error) {
+    console.error("❌ Error al enviar ubicación:", error);
+  }
+}
+
 export default function MapViewComponent() {
   const [deviceLocation, setDeviceLocation] = useState<Coordinate | null>(null);
   const [routeCoords, setRouteCoords] = useState<Coordinate[]>([]);
+  const [isTracking, setIsTracking] = useState(false);
   const locationSubscription = useRef<Location.LocationSubscription | null>(null);
 
   const initialRegion = {
@@ -22,7 +76,72 @@ export default function MapViewComponent() {
     longitudeDelta: 0.2,
   };
 
-  // Obtener ubicación del dispositivo en tiempo real
+  // Solicitar permisos de ubicación (incluyendo background)
+  const requestPermissions = async () => {
+    const { status: foregroundStatus } = await Location.requestForegroundPermissionsAsync();
+    
+    if (foregroundStatus !== "granted") {
+      Alert.alert("Permiso denegado", "Se necesita permiso de ubicación");
+      return false;
+    }
+
+    const { status: backgroundStatus } = await Location.requestBackgroundPermissionsAsync();
+    
+    if (backgroundStatus !== "granted") {
+      Alert.alert(
+        "Permiso de fondo denegado",
+        "Para rastrear en segundo plano, habilita 'Permitir siempre' en la configuración"
+      );
+      return false;
+    }
+
+    return true;
+  };
+
+  // Iniciar tracking en background
+  const startBackgroundTracking = async () => {
+    const hasPermissions = await requestPermissions();
+    if (!hasPermissions) return;
+
+    try {
+      const isTaskDefined = await TaskManager.isTaskDefined(LOCATION_TASK_NAME);
+      if (!isTaskDefined) {
+        console.error("La tarea no está definida");
+        return;
+      }
+
+      await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+        accuracy: Location.Accuracy.High,
+        timeInterval: 1, // Actualizar cada 10 segundos
+        distanceInterval: 10, // O cada 10 metros
+        foregroundService: {
+          notificationTitle: "Rastreando ubicación",
+          notificationBody: "Tu ubicación se está compartiendo",
+          notificationColor: "#4285F4",
+        },
+        pausesUpdatesAutomatically: false,
+        showsBackgroundLocationIndicator: true,
+      });
+
+      setIsTracking(true);
+      console.log("✅ Background tracking iniciado");
+    } catch (error) {
+      console.error("Error al iniciar tracking:", error);
+    }
+  };
+
+  // Detener tracking en background
+  const stopBackgroundTracking = async () => {
+    try {
+      await Location.stopLocationUpdatesAsync(LOCATION_TASK_NAME);
+      setIsTracking(false);
+      console.log("🛑 Background tracking detenido");
+    } catch (error) {
+      console.error("Error al detener tracking:", error);
+    }
+  };
+
+  // Ubicación en tiempo real (foreground)
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
@@ -31,12 +150,11 @@ export default function MapViewComponent() {
         return;
       }
 
-      // Observar cambios de ubicación en tiempo real
       locationSubscription.current = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.High,
-          timeInterval: 5000, // Actualizar cada 5 segundos
-          distanceInterval: 10, // O cuando se mueva 10 metros
+          timeInterval: 5000,
+          distanceInterval: 10,
         },
         (location) => {
           setDeviceLocation({
@@ -48,7 +166,6 @@ export default function MapViewComponent() {
       );
     })();
 
-    // Limpiar suscripción al desmontar
     return () => {
       locationSubscription.current?.remove();
     };
@@ -82,15 +199,12 @@ export default function MapViewComponent() {
       const res = await fetch(url);
       const json = await res.json();
 
-      console.log("Respuesta de ruta:", json);
-
       if (!json.routes || json.routes.length === 0) {
         console.warn("No se encontró ruta");
         setRouteCoords([]);
         return;
       }
 
-      // Decodificar polyline
       const points: number[][] = polyline.decode(
         json.routes[0].overview_polyline.points
       );
@@ -107,7 +221,6 @@ export default function MapViewComponent() {
     }
   };
 
-  // Cargar ruta al montar el componente
   useEffect(() => {
     if (GOOGLE_API_KEY) {
       fetchRoute();
@@ -116,10 +229,21 @@ export default function MapViewComponent() {
     }
   }, []);
 
-  console.log("Device Location:", deviceLocation);
-
   return (
     <View style={styles.container}>
+      <View style={styles.controls}>
+        <Button
+          title={isTracking ? "Detener Tracking" : "Iniciar Tracking"}
+          onPress={isTracking ? stopBackgroundTracking : startBackgroundTracking}
+          color={isTracking ? "#FF3B30" : "#4285F4"}
+        />
+        {isTracking && (
+          <Text style={styles.statusText}>
+            🟢 Rastreando en segundo plano
+          </Text>
+        )}
+      </View>
+
       <MapView
         provider={PROVIDER_GOOGLE}
         style={styles.map}
@@ -127,7 +251,6 @@ export default function MapViewComponent() {
         showsUserLocation={true}
         showsMyLocationButton={true}
       >
-        {/* Marcador de Inicio - Verde */}
         <Marker
           coordinate={waypoints[0]}
           title="Inicio"
@@ -135,7 +258,6 @@ export default function MapViewComponent() {
           pinColor="green"
         />
 
-        {/* Marcador de Destino - Rojo */}
         <Marker
           coordinate={waypoints[waypoints.length - 1]}
           title="Destino"
@@ -143,7 +265,6 @@ export default function MapViewComponent() {
           pinColor="red"
         />
 
-        {/* Marcador de Ubicación Actual - Busesito */}
         {deviceLocation && (
           <Marker
             coordinate={deviceLocation}
@@ -156,7 +277,6 @@ export default function MapViewComponent() {
           </Marker>
         )}
 
-        {/* Polyline de la ruta */}
         {routeCoords.length > 0 && (
           <Polyline
             coordinates={routeCoords}
@@ -172,19 +292,30 @@ export default function MapViewComponent() {
 const styles = StyleSheet.create({
   container: {
     width: "90%",
-    height: "50%",
+    height: "60%",
     borderRadius: 12,
     overflow: "hidden",
     borderColor: "#ccc",
     borderWidth: 1,
     marginBottom: 20,
   },
+  controls: {
+    padding: 10,
+    backgroundColor: "#f5f5f5",
+    alignItems: "center",
+  },
+  statusText: {
+    marginTop: 8,
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#34C759",
+  },
   map: {
     width: "100%",
-    height: "100%",
+    flex: 1,
   },
   busMarker: {
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
   },
   busEmoji: {
     fontSize: 24,

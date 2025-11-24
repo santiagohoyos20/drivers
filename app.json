@@ -12,8 +12,12 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "UIBackgroundModes": ["location"]
-      }
+        "UIBackgroundModes": ["location"],
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "La app necesita tu ubicación para rastrear el bus en tiempo real, incluso cuando está en segundo plano.",
+        "NSLocationWhenInUseUsageDescription": "La app necesita tu ubicación para mostrarte en el mapa.",
+        "NSLocationAlwaysUsageDescription": "La app necesita acceso continuo a tu ubicación para rastrear el bus incluso cuando la app está cerrada."
+      },
+      "bundleIdentifier": "com.sjhs.drivers"
     },
 
     "android": {
@@ -27,7 +31,9 @@
       "permissions": [
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
-        "ACCESS_BACKGROUND_LOCATION"
+        "ACCESS_BACKGROUND_LOCATION",
+        "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE_LOCATION"
       ],
       "config": {
         "googleMaps": {
@@ -59,9 +65,11 @@
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "La app necesita tu ubicación para rastrear el bus en tiempo real.",
-          "locationAlwaysPermission": "La app necesita tu ubicación incluso en segundo plano para rastrear el bus.",
-          "locationWhenInUsePermission": "La app necesita tu ubicación para mostrarte en el mapa."
+          "locationAlwaysAndWhenInUsePermission": "La app necesita tu ubicación para rastrear el bus en tiempo real, incluso cuando está en segundo plano.",
+          "locationAlwaysPermission": "La app necesita acceso continuo a tu ubicación para rastrear el bus incluso cuando la app está cerrada.",
+          "locationWhenInUsePermission": "La app necesita tu ubicación para mostrarte en el mapa.",
+          "isAndroidBackgroundLocationEnabled": true,
+          "isAndroidForegroundServiceEnabled": true
         }
       ]
     ],
