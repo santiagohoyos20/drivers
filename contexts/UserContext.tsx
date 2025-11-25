@@ -6,7 +6,8 @@ export const UserContext = createContext();
 
 const api = axios.create({
   // baseURL: "http://localhost:80", // cambia esto
-  baseURL: "http://192.168.1.45:80", // cambia esto
+  // baseURL: "http://192.168.1.45:80", // cambia esto
+  baseURL: "https://unchallengeably-overglad-brinda.ngrok-free.dev"
   
 });
 

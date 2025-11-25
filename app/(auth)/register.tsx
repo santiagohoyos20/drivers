@@ -1,14 +1,15 @@
-import { Link } from 'expo-router';
-import { useState } from 'react';
+import { Link } from "expo-router";
+import { useState } from "react";
 import {
+  Image,
   Keyboard,
   Platform,
   StyleSheet,
   Text,
   TextInput,
   TouchableWithoutFeedback,
-  View
-} from 'react-native';
+  View,
+} from "react-native";
 import { useUser } from "../../hooks/useUser";
 
 const Register = () => {
@@ -31,16 +32,23 @@ const Register = () => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Platform.OS !== "web" ? Keyboard.dismiss : undefined}>
+    <TouchableWithoutFeedback
+      onPress={Platform.OS !== "web" ? Keyboard.dismiss : undefined}
+    >
       <View style={styles.container}>
+        <View style={{ height: 25 }} />
+        
+        <Image
+          source={require("../../assets/images/icon-sin-bg.png")}
+          style={styles.logo}
+          resizeMode="contain"
+        />
 
-        <View style={{ height: 40 }} />
+        <View style={{ height: 20 }} />
 
-        <Text style={styles.title}>
-          Register an Account
-        </Text>
+        <Text style={styles.title}>Registra tu Cuenta</Text>
 
-        <View style={{ height: 30 }} />
+        <View style={{ height: 20 }} />
 
         <TextInput
           style={[styles.input, { marginBottom: 20 }]}
@@ -79,19 +87,19 @@ const Register = () => {
           onChangeText={setPassword}
           secureTextEntry
         />
+        <View style={{ height: 15 }} />
 
         <Text style={styles.button} onPress={handleSubmit}>
           Register
         </Text>
 
-        <View style={{ height: 100 }} />
+        <View style={{ height: 70 }} />
 
         <Link href="/login" replace>
           <Text style={{ textAlign: "center", color: "#007AFF" }}>
             Login instead
           </Text>
         </Link>
-
       </View>
     </TouchableWithoutFeedback>
   );
@@ -101,15 +109,13 @@ export default Register;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
   },
   title: {
     textAlign: "center",
     fontSize: 18,
-    marginBottom: 30
+    marginBottom: 30,
   },
   input: {
     width: "80%",
@@ -117,7 +123,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 10,
-    fontSize: 16
+    fontSize: 16,
   },
   button: {
     backgroundColor: "#333",
@@ -126,6 +132,10 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 10,
     fontSize: 16,
-    textAlign: "center"
-  }
+    textAlign: "center",
+  },
+  logo: {
+    width: 150,
+    height: 150,
+  },
 });

@@ -2,7 +2,7 @@ import polyline from "@mapbox/polyline";
 import * as Location from "expo-location";
 import * as TaskManager from "expo-task-manager";
 import { useEffect, useRef, useState } from "react";
-import { Alert, Button, StyleSheet, Text, View } from "react-native";
+import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 
 // Nombre de la tarea en background
@@ -23,11 +23,11 @@ TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
   if (data) {
     const { locations } = data as { locations: Location.LocationObject[] };
     const location = locations[0];
-    
+
     console.log("📍 Ubicación en background:", {
       lat: location.coords.latitude,
       lng: location.coords.longitude,
-      timestamp: new Date(location.timestamp).toLocaleTimeString()
+      timestamp: new Date(location.timestamp).toLocaleTimeString(),
     });
 
     // Aquí puedes enviar la ubicación a tu servidor
@@ -54,7 +54,7 @@ async function sendLocationToServer(location: {
       },
       body: JSON.stringify(location),
     });
-    
+
     if (response.ok) {
       console.log("✅ Ubicación enviada al servidor");
     }
@@ -67,7 +67,9 @@ export default function MapViewComponent() {
   const [deviceLocation, setDeviceLocation] = useState<Coordinate | null>(null);
   const [routeCoords, setRouteCoords] = useState<Coordinate[]>([]);
   const [isTracking, setIsTracking] = useState(false);
-  const locationSubscription = useRef<Location.LocationSubscription | null>(null);
+  const locationSubscription = useRef<Location.LocationSubscription | null>(
+    null
+  );
 
   const initialRegion = {
     latitude: 10.9878,
@@ -78,15 +80,17 @@ export default function MapViewComponent() {
 
   // Solicitar permisos de ubicación (incluyendo background)
   const requestPermissions = async () => {
-    const { status: foregroundStatus } = await Location.requestForegroundPermissionsAsync();
-    
+    const { status: foregroundStatus } =
+      await Location.requestForegroundPermissionsAsync();
+
     if (foregroundStatus !== "granted") {
       Alert.alert("Permiso denegado", "Se necesita permiso de ubicación");
       return false;
     }
 
-    const { status: backgroundStatus } = await Location.requestBackgroundPermissionsAsync();
-    
+    const { status: backgroundStatus } =
+      await Location.requestBackgroundPermissionsAsync();
+
     if (backgroundStatus !== "granted") {
       Alert.alert(
         "Permiso de fondo denegado",
@@ -231,60 +235,75 @@ export default function MapViewComponent() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.controls}>
-        <Button
-          title={isTracking ? "Detener Tracking" : "Iniciar Tracking"}
-          onPress={isTracking ? stopBackgroundTracking : startBackgroundTracking}
-          color={isTracking ? "#FF3B30" : "#4285F4"}
-        />
-        {isTracking && (
-          <Text style={styles.statusText}>
-            🟢 Rastreando en segundo plano
-          </Text>
-        )}
-      </View>
-
-      <MapView
-        provider={PROVIDER_GOOGLE}
-        style={styles.map}
-        initialRegion={initialRegion}
-        showsUserLocation={true}
-        showsMyLocationButton={true}
-      >
-        <Marker
-          coordinate={waypoints[0]}
-          title="Inicio"
-          description="Punto de partida"
-          pinColor="green"
-        />
-
-        <Marker
-          coordinate={waypoints[waypoints.length - 1]}
-          title="Destino"
-          description="Punto de llegada"
-          pinColor="red"
-        />
-
-        {deviceLocation && (
+      <View style={styles.containerMap}>
+        <MapView
+          provider={PROVIDER_GOOGLE}
+          style={styles.map}
+          initialRegion={initialRegion}
+          showsUserLocation={true}
+          showsMyLocationButton={true}
+        >
           <Marker
-            coordinate={deviceLocation}
-            title="Mi Ubicación"
-            description="Tu ubicación actual"
-          >
-            <View style={styles.busMarker}>
-              <Text style={styles.busEmoji}>🚌</Text>
-            </View>
-          </Marker>
-        )}
-
-        {routeCoords.length > 0 && (
-          <Polyline
-            coordinates={routeCoords}
-            strokeColor="#4285F4"
-            strokeWidth={5}
+            coordinate={waypoints[0]}
+            title="Inicio"
+            description="Punto de partida"
+            pinColor="green"
           />
-        )}
-      </MapView>
+
+          <Marker
+            coordinate={waypoints[waypoints.length - 1]}
+            title="Destino"
+            description="Punto de llegada"
+            pinColor="red"
+          />
+
+          {deviceLocation && (
+            <Marker
+              coordinate={deviceLocation}
+              title="Mi Ubicación"
+              description="Tu ubicación actual"
+            >
+              <View style={styles.busMarker}>
+                <Text style={styles.busEmoji}>🚌</Text>
+              </View>
+            </Marker>
+          )}
+
+          {routeCoords.length > 0 && (
+            <Polyline
+              coordinates={routeCoords}
+              strokeColor="#4285F4"
+              strokeWidth={5}
+            />
+          )}
+        </MapView>
+      </View>
+      <View style={styles.controls}>
+        <Pressable
+          onPress={
+            isTracking ? stopBackgroundTracking : startBackgroundTracking
+          }
+          style={{
+            backgroundColor: isTracking ? "#FF3B30" : "#4285F4",
+            paddingVertical: 14,
+            paddingHorizontal: 20,
+            borderRadius: 10,
+            width: "200",
+            alignSelf: "center",
+          }}
+        >
+          <Text
+            style={{
+              color: "#fff",
+              textAlign: "center",
+              fontSize: 16,
+              fontWeight: "600",
+            }}
+          >
+            {isTracking ? "Detener Tracking" : "Iniciar Tracking"}
+          </Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
@@ -292,7 +311,12 @@ export default function MapViewComponent() {
 const styles = StyleSheet.create({
   container: {
     width: "90%",
-    height: "60%",
+    height: "70%",
+    overflow: "hidden",
+    marginBottom: 20,
+  },
+  containerMap: {
+    height: "80%",
     borderRadius: 12,
     overflow: "hidden",
     borderColor: "#ccc",
