@@ -1,14 +1,15 @@
-import { Link } from 'expo-router';
-import { useState } from 'react';
+import { Link } from "expo-router";
+import { useState } from "react";
 import {
+  Image,
   Keyboard,
   Platform,
   StyleSheet,
   Text,
   TextInput,
   TouchableWithoutFeedback,
-  View
-} from 'react-native';
+  View,
+} from "react-native";
 import { useUser } from "../../hooks/useUser";
 
 const Login = () => {
@@ -21,14 +22,20 @@ const Login = () => {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Platform.OS !== "web" ? Keyboard.dismiss : undefined}>
+    <TouchableWithoutFeedback
+      onPress={Platform.OS !== "web" ? Keyboard.dismiss : undefined}
+    >
       <View style={styles.container}>
-        
-        <View style={{ height: 40 }} />
+        <View style={{ height: 30 }} />
 
-        <Text style={styles.title}>
-          Login to Your Account
-        </Text>
+        <Image
+          source={require("../../assets/images/icon-sin-bg.png")}
+          style={styles.logo}
+          resizeMode="contain"
+        />
+        <View style={{ height: 30 }} />
+
+        <Text style={styles.title}>Iniciar Sesión</Text>
 
         <View style={{ height: 30 }} />
 
@@ -48,6 +55,8 @@ const Login = () => {
           secureTextEntry
         />
 
+        <View style={{ height: 10 }} />
+
         <Text style={styles.button} onPress={handleSubmit}>
           Login
         </Text>
@@ -59,7 +68,7 @@ const Login = () => {
             Register instead
           </Text>
         </Link>
-
+        <View style={{ height: 75 }} />
       </View>
     </TouchableWithoutFeedback>
   );
@@ -72,12 +81,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
   },
   title: {
     textAlign: "center",
     fontSize: 18,
-    marginBottom: 30
+    marginBottom: 30,
   },
   input: {
     width: "80%",
@@ -85,7 +94,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 10,
-    fontSize: 16
+    fontSize: 16,
   },
   button: {
     backgroundColor: "#333",
@@ -93,6 +102,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     paddingVertical: 12,
     borderRadius: 10,
-    fontSize: 16
-  }
+    fontSize: 16,
+  },
+  logo: {
+    width: 150,
+    height: 150,
+  },
 });
