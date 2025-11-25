@@ -3,7 +3,9 @@ import { useState } from "react";
 import {
   Image,
   Keyboard,
+  KeyboardAvoidingView,
   Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -32,76 +34,87 @@ const Register = () => {
   };
 
   return (
-    <TouchableWithoutFeedback
-      onPress={Platform.OS !== "web" ? Keyboard.dismiss : undefined}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
     >
-      <View style={styles.container}>
-        <View style={{ height: 25 }} />
-        
-        <Image
-          source={require("../../assets/images/icon-sin-bg.png")}
-          style={styles.logo}
-          resizeMode="contain"
-        />
+      <TouchableWithoutFeedback
+        onPress={Platform.OS !== "web" ? Keyboard.dismiss : undefined}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContainer}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.container}>
+            <View style={{ height: 25 }} />
 
-        <View style={{ height: 20 }} />
+            <Image
+              source={require("../../assets/images/icon-sin-bg.png")}
+              style={styles.logo}
+              resizeMode="contain"
+            />
 
-        <Text style={styles.title}>Registra tu Cuenta</Text>
+            <View style={{ height: 20 }} />
 
-        <View style={{ height: 20 }} />
+            <Text style={styles.title}>Registra tu Cuenta</Text>
 
-        <TextInput
-          style={[styles.input, { marginBottom: 20 }]}
-          placeholder="First Name"
-          value={firstName}
-          onChangeText={setFirstName}
-        />
+            <View style={{ height: 20 }} />
 
-        <TextInput
-          style={[styles.input, { marginBottom: 20 }]}
-          placeholder="Last Name"
-          value={lastName}
-          onChangeText={setLastName}
-        />
+            <TextInput
+              style={[styles.input, { marginBottom: 20 }]}
+              placeholder="First Name"
+              value={firstName}
+              onChangeText={setFirstName}
+            />
 
-        <TextInput
-          style={[styles.input, { marginBottom: 20 }]}
-          placeholder="Phone"
-          value={phone}
-          onChangeText={setPhone}
-          keyboardType="phone-pad"
-        />
+            <TextInput
+              style={[styles.input, { marginBottom: 20 }]}
+              placeholder="Last Name"
+              value={lastName}
+              onChangeText={setLastName}
+            />
 
-        <TextInput
-          style={[styles.input, { marginBottom: 20 }]}
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-        />
+            <TextInput
+              style={[styles.input, { marginBottom: 20 }]}
+              placeholder="Phone"
+              value={phone}
+              onChangeText={setPhone}
+              keyboardType="phone-pad"
+            />
 
-        <TextInput
-          style={[styles.input, { marginBottom: 20 }]}
-          placeholder="Password"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
-        <View style={{ height: 15 }} />
+            <TextInput
+              style={[styles.input, { marginBottom: 20 }]}
+              placeholder="Email"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+            />
 
-        <Text style={styles.button} onPress={handleSubmit}>
-          Register
-        </Text>
+            <TextInput
+              style={[styles.input, { marginBottom: 20 }]}
+              placeholder="Password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+            />
+            <View style={{ height: 15 }} />
 
-        <View style={{ height: 70 }} />
+            <Text style={styles.button} onPress={handleSubmit}>
+              Register
+            </Text>
 
-        <Link href="/login" replace>
-          <Text style={{ textAlign: "center", color: "#007AFF" }}>
-            Login instead
-          </Text>
-        </Link>
-      </View>
-    </TouchableWithoutFeedback>
+            <View style={{ height: 70 }} />
+
+            <Link href="/login" replace>
+              <Text style={{ textAlign: "center", color: "#007AFF" }}>
+                Login instead
+              </Text>
+            </Link>
+          </View>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -137,5 +150,8 @@ const styles = StyleSheet.create({
   logo: {
     width: 150,
     height: 150,
+  },
+  scrollContainer: {
+    flexGrow: 1,
   },
 });
