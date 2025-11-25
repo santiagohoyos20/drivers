@@ -45,15 +45,34 @@ async function sendLocationToServer(location: {
   longitude: number;
   timestamp: number;
 }) {
+  function mapLocationToVehicle(
+    input: {
+      latitude: number;
+      longitude: number;
+      timestamp: number;
+    },
+    vehicleId: string = "vehicle-123"
+  ) {
+    return {
+      vehicleId,
+      lng: input.longitude,
+      lat: input.latitude,
+    };
+  }
+  const newLocation = mapLocationToVehicle(location, "bus000");
+
   try {
     // Reemplaza con tu endpoint
-    const response = await fetch("https://tu-servidor.com/api/location", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(location),
-    });
+    const response = await fetch(
+      "https://unchallengeably-overglad-brinda.ngrok-free.dev/telemetry/register",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newLocation),
+      }
+    );  
 
     if (response.ok) {
       console.log("✅ Ubicación enviada al servidor");
@@ -116,7 +135,7 @@ export default function MapViewComponent() {
 
       await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
         accuracy: Location.Accuracy.High,
-        timeInterval: 1, // Actualizar cada 10 segundos
+        timeInterval: 10000, // Actualizar cada 10 segundos
         distanceInterval: 10, // O cada 10 metros
         foregroundService: {
           notificationTitle: "Rastreando ubicación",
