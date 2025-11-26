@@ -15,7 +15,7 @@ export default function Main() {
       ]}
     >
       <View style={styles.header}>
-        <Text style={styles.title}>Bienvenido</Text>
+        <Text style={styles.title}>Mapa</Text>
 
         <Pressable onPress={logout} style={styles.logoutButton}>
           <Text style={styles.logoutText}>Logout</Text>
