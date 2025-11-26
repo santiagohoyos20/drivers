@@ -67,9 +67,7 @@
         {
           "locationAlwaysAndWhenInUsePermission": "La app necesita tu ubicación para rastrear el bus en tiempo real, incluso cuando está en segundo plano.",
           "locationAlwaysPermission": "La app necesita acceso continuo a tu ubicación para rastrear el bus incluso cuando la app está cerrada.",
-          "locationWhenInUsePermission": "La app necesita tu ubicación para mostrarte en el mapa.",
-          "isAndroidBackgroundLocationEnabled": true,
-          "isAndroidForegroundServiceEnabled": true
+          "locationWhenInUsePermission": "La app necesita tu ubicación para mostrarte en el mapa."
         }
       ]
     ],

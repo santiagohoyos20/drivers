@@ -127,11 +127,11 @@ export default function MapViewComponent() {
     if (!hasPermissions) return;
 
     try {
-      const isTaskDefined = await TaskManager.isTaskDefined(LOCATION_TASK_NAME);
-      if (!isTaskDefined) {
-        console.error("La tarea no está definida");
-        return;
-      }
+      // const isTaskDefined = await TaskManager.isTaskDefined(LOCATION_TASK_NAME);
+      // if (!isTaskDefined) {
+      //   console.error("La tarea no está definida");
+      //   return;
+      // }
 
       await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
         accuracy: Location.Accuracy.High,
