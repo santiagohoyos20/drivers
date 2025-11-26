@@ -14,6 +14,7 @@ export default function AppLayout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="home" />
+      <Stack.Screen name="info" />
       {/* <Stack.Screen name="profile" /> */}
     </Stack>
   );
