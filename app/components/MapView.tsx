@@ -303,19 +303,23 @@ export default function MapViewComponent() {
             isTracking ? stopBackgroundTracking : startBackgroundTracking
           }
           style={{
-            backgroundColor: isTracking ? "#FF3B30" : "#4285F4",
-            paddingVertical: 14,
-            paddingHorizontal: 20,
-            borderRadius: 10,
-            width: "200",
+            
             alignSelf: "center",
+
+            width: 94,
+            height: 94,
+            backgroundColor: isTracking ? "#FF3B30" : "#FFCC00",
+            borderRadius: 100,
+            justifyContent: "center",
+            alignItems: "center",
+            marginBottom: 8,
           }}
         >
           <Text
             style={{
-              color: "#fff",
+              color: "#3e3d3dff",
               textAlign: "center",
-              fontSize: 16,
+              fontSize: 20,
               fontWeight: "600",
             }}
           >
@@ -330,7 +334,6 @@ export default function MapViewComponent() {
 const styles = StyleSheet.create({
   container: {
     width: "90%",
-    height: "70%",
     overflow: "hidden",
     marginBottom: 20,
   },
@@ -343,8 +346,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   controls: {
-    padding: 10,
-    backgroundColor: "#f5f5f5",
+    padding: -5,
+    backgroundColor: "#ffffffff",
     alignItems: "center",
   },
   statusText: {
