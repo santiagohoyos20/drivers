@@ -5,14 +5,20 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableWithoutFeedback,
   View,
+  Pressable,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useUser } from "../../hooks/useUser";
+
+
+import { StatusBar} from "react-native";
+
+
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -24,134 +30,168 @@ const Register = () => {
   const { register } = useUser();
 
   const handleSubmit = async () => {
-    await register({
-      email,
-      password,
-      firstName,
-      lastName,
-      phone,
-    });
+    await register({ email, password, firstName, lastName, phone });
   };
 
+
   return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#FFECE0" }}>
     <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
       style={{ flex: 1 }}
     >
       <TouchableWithoutFeedback
         onPress={Platform.OS !== "web" ? Keyboard.dismiss : undefined}
       >
-        <ScrollView
-          contentContainerStyle={styles.scrollContainer}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-        >
-          <View style={styles.container}>
-            <View style={{ height: 25 }} />
+        <View style={styles.screen}>
+          
+          {/* Logo */}
+          <Image
+            source={require("../../assets/images/icon-sin-bg.png")}
+            style={styles.logo}
+            resizeMode="contain"
+          />
 
-            <Image
-              source={require("../../assets/images/icon-sin-bg.png")}
-              style={styles.logo}
-              resizeMode="contain"
-            />
-
-            <View style={{ height: 20 }} />
-
+          {/* Card */}
+          <View style={styles.card}>
             <Text style={styles.title}>Registra tu Cuenta</Text>
 
-            <View style={{ height: 20 }} />
-
             <TextInput
-              style={[styles.input, { marginBottom: 20 }]}
-              placeholder="First Name"
+              style={styles.input}
+              placeholder="Nombres"
+              placeholderTextColor="#888"
               value={firstName}
               onChangeText={setFirstName}
             />
 
             <TextInput
-              style={[styles.input, { marginBottom: 20 }]}
-              placeholder="Last Name"
+              style={styles.input}
+              placeholder="Apellidos"
+              placeholderTextColor="#888"
               value={lastName}
               onChangeText={setLastName}
             />
 
             <TextInput
-              style={[styles.input, { marginBottom: 20 }]}
-              placeholder="Phone"
+              style={styles.input}
+              placeholder="Teléfono"
+              placeholderTextColor="#888"
               value={phone}
               onChangeText={setPhone}
               keyboardType="phone-pad"
             />
 
             <TextInput
-              style={[styles.input, { marginBottom: 20 }]}
-              placeholder="Email"
+              style={styles.input}
+              placeholder="Correo Electrónico"
+              placeholderTextColor="#888"
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
             />
 
             <TextInput
-              style={[styles.input, { marginBottom: 20 }]}
-              placeholder="Password"
+              style={styles.input}
+              placeholder="Contraseña"
+              placeholderTextColor="#888"
               value={password}
               onChangeText={setPassword}
               secureTextEntry
             />
-            <View style={{ height: 15 }} />
 
-            <Text style={styles.button} onPress={handleSubmit}>
-              Register
-            </Text>
-
-            <View style={{ height: 70 }} />
+            <Pressable
+              onPress={handleSubmit}
+              style={({ pressed }) => [
+                styles.button,
+                { backgroundColor: pressed ? "#D62828" : "#FFCC00" },
+              ]}
+            >
+              <Text style={styles.buttonText}>Registrarse</Text>
+            </Pressable>
 
             <Link href="/login" replace>
-              <Text style={{ textAlign: "center", color: "#007AFF" }}>
-                Login instead
+              <Text style={styles.registerText}>
+                ¿Ya tienes cuenta? Inicia sesión
               </Text>
             </Link>
           </View>
-        </ScrollView>
+        </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
 export default Register;
 
 const styles = StyleSheet.create({
-  container: {
+  screen: {
+    flex: 1,
+    backgroundColor: "#ffece0ff",
+    justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 20,
+    paddingHorizontal: 20, // MISMO que login
   },
-  title: {
-    textAlign: "center",
-    fontSize: 18,
+
+  logo: {
+    width: 200,
+    height: 200,
+    marginBottom: -20,
+    marginTop: 10,
+  },
+
+  card: {
+    width: "90%", // EXACTO al login
+    backgroundColor: "#fff",
+    padding: 25,
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 5,
     marginBottom: 30,
   },
-  input: {
-    width: "80%",
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 10,
-    fontSize: 16,
-  },
-  button: {
-    backgroundColor: "#333",
-    color: "#fff",
-    paddingHorizontal: 30,
-    paddingVertical: 12,
-    borderRadius: 10,
-    fontSize: 16,
+
+  title: {
     textAlign: "center",
+    fontSize: 22,
+    fontWeight: "600",
+    marginBottom: 25,
+    color: "#333",
   },
-  logo: {
-    width: 150,
-    height: 150,
+
+  input: {
+    width: "100%",
+    paddingVertical: 12,
+    paddingHorizontal: 15,
+    borderWidth: 1.5,
+    borderColor: "#ddd",
+    borderRadius: 12,
+    fontSize: 16,
+    marginBottom: 20,
+    backgroundColor: "#FAFAFA",
+    color: "#333",
   },
-  scrollContainer: {
-    flexGrow: 1,
+
+  button: {
+    paddingVertical: 15,
+    borderRadius: 12,
+    marginTop: 10,
+    marginBottom: 13,
+    alignItems: "center",
+  },
+
+  buttonText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#333",
+  },
+
+  registerText: {
+    textAlign: "center",
+    color: "#007AFF",
+    marginBottom: -10,
+    height: 200,
   },
 });
